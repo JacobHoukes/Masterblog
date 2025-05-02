@@ -31,20 +31,22 @@ def index():
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     if request.method == 'POST':
-        blog_posts = load_blog_posts()
+        author = request.form.get("author")
+        title = request.form.get("title")
+        content = request.form.get("content")
 
+        blog_posts = load_blog_posts()
+        new_id = max([post["id"] for post in blog_posts], default=0) + 1
         new_post = {
-            "id": max([post["id"] for post in blog_posts], default=0) + 1,
-            "author": request.form.get("author"),
-            "title": request.form.get("title"),
-            "content": request.form.get("content")
+            "id": new_id,
+            "author": author,
+            "title": title,
+            "content": content
         }
 
         blog_posts.append(new_post)
         save_blog_posts(blog_posts)
-
         return redirect(url_for('index'))
-
     return render_template('add.html')
 
 
