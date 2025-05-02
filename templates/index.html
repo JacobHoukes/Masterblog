@@ -8,13 +8,13 @@
 </head>
 <body>
     <h1>Welcome to My Flask Blog!</h1>
- {% for post in posts %}
-    <h2>{{ post.title }}</h2>
-    <p><strong>Author:</strong> {{ post.author }}</p>
-    <p>{{ post.content }}</p>
-    <hr>
-{% endfor %}
-<a href="{{ url_for('add') }}">Add New Post</a>
-
+    {% for post in posts %}
+        <h2>{{ post.title }}</h2>
+        <p><strong>Author:</strong> {{ post.author }}</p>
+        <p>{{ post.content }}</p>
+        <a href="{{ url_for('delete', post_id=post.id) }}">Delete</a>
+        <hr>
+    {% endfor %}
+    <a href="{{ url_for('add') }}">Add New Post</a>
 </body>
 </html>

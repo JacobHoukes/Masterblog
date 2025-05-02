@@ -1,25 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for
 import json
-import os
 
 app = Flask(__name__)
 
 
 def load_blog_posts():
-    with open('blog_posts.json', 'r') as file:
-        return json.load(file)
-
-
-def load_blog_posts():
-    if os.path.exists('blog_posts.json'):
+    """This function loads the blog posts from the JSON file"""
+    try:
         with open('blog_posts.json', 'r') as file:
             return json.load(file)
-    return []
+    except FileNotFoundError:
+        return []
 
 
-def save_blog_posts(posts):
+def save_blog_posts(blog_posts):
+    """This function saves the blog posts to the JSON file"""
     with open('blog_posts.json', 'w') as file:
-        json.dump(posts, file, indent=4)
+        json.dump(blog_posts, file, indent=4)
 
 
 @app.route('/')
@@ -31,23 +28,28 @@ def index():
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     if request.method == 'POST':
-        author = request.form.get("author")
-        title = request.form.get("title")
-        content = request.form.get("content")
-
         blog_posts = load_blog_posts()
-        new_id = max([post["id"] for post in blog_posts], default=0) + 1
+
         new_post = {
-            "id": new_id,
-            "author": author,
-            "title": title,
-            "content": content
+            "id": max([post["id"] for post in blog_posts], default=0) + 1,
+            "author": request.form.get("author"),
+            "title": request.form.get("title"),
+            "content": request.form.get("content")
         }
 
         blog_posts.append(new_post)
         save_blog_posts(blog_posts)
         return redirect(url_for('index'))
+
     return render_template('add.html')
+
+
+@app.route('/delete/<int:post_id>')
+def delete(post_id):
+    blog_posts = load_blog_posts()
+    blog_posts = [post for post in blog_posts if post['id'] != post_id]
+    save_blog_posts(blog_posts)
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
