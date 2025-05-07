@@ -7,7 +7,7 @@ app = Flask(__name__)
 def load_blog_posts():
     """This function loads the blog posts from the JSON file"""
     try:
-        with open('blog_posts.json', 'r') as file:
+        with open('blog_posts.json', 'r', encoding='utf-8') as file:
             return json.load(file)
     except FileNotFoundError:
         return []
@@ -21,12 +21,14 @@ def save_blog_posts(blog_posts):
 
 @app.route('/')
 def index():
+    """This function renders the homepage with a list of blog posts."""
     blog_posts = load_blog_posts()
     return render_template('index.html', posts=blog_posts)
 
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
+    """This function handles adding a new blog post and redirects to the homepage."""
     if request.method == 'POST':
         blog_posts = load_blog_posts()
 
@@ -46,6 +48,7 @@ def add():
 
 @app.route('/delete/<int:post_id>')
 def delete(post_id):
+    """This function deletes a blog post by its ID and redirects to the homepage."""
     blog_posts = load_blog_posts()
     blog_posts = [post for post in blog_posts if post['id'] != post_id]
     save_blog_posts(blog_posts)
@@ -54,6 +57,7 @@ def delete(post_id):
 
 @app.route('/update/<int:post_id>', methods=['GET', 'POST'])
 def update(post_id):
+    """This function updates an existing blog post and redirects to the homepage."""
     blog_posts = load_blog_posts()
     post = next((post for post in blog_posts if post['id'] == post_id), None)
     if post is None:
